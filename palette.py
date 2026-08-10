@@ -10,6 +10,7 @@ class Palette():
     def __init__(self, json_path):
         self.palette = self._load_and_validate(json_path)
 
+    # separare funzioni?
     def _load_and_validate(self, palette_json):
         try:
             with open(palette_json, "r", encoding = "utf-8") as file:
