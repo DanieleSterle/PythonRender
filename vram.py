@@ -10,6 +10,7 @@ class VirtualVRAM():
         self.tiles = self._load_and_decode_sheet(tiles_path, 256, 32, 8, 8)
         self.sprites = self._load_and_decode_sheet(sprites_path, 256, 64, 4, 4)
 
+    # separare funzioni?
     def _load_and_decode_sheet(self, filepath, sheet_size, item_size, grid_rows, grid_cols):
         
         try:

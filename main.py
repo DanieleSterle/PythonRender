@@ -6,14 +6,15 @@ from vram import VirtualVRAM
 
 if __name__ == "__main__":
 
+    # migliorare 
     # Parse command-line arguments
     try:
         args = utils.get_argv()
-        print("Arguments parsed successfully:", args)
+        # print("Arguments parsed successfully:", args)
 
 
         # Rinominare objs
         myP = Palette(args.palette_json)
-        myVRAM = VirtualVRAM(myP, args.tiles_bin, args.sprites_bin)
+        myVRAM = VirtualVRAM(args.tiles_bin, args.sprites_bin)
     except Exception as e:
         print(f"An error occurred: {e}")
