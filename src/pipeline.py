@@ -3,8 +3,8 @@
 import numpy as np
 from PIL import Image
 
+# Eccezione personalizzata per errori nella pipeline di rendering.
 class RenderingPipelineException(Exception):
-    """Custom exception for rendering pipeline errors."""
     pass
 
 class RenderingPipeline:
@@ -13,23 +13,22 @@ class RenderingPipeline:
         self.vram = vram
         self.blitter = blitter
 
+    # Esegue la composizione completa della scena, converte il frame buffer 
+    # indicizzato in RGB e salva il risultato finale come immagine PNG.
     def render_scene(self, scene_data, output_path):
-        """
-        Executes the complete scene composition, converts the indexed frame 
-        buffer to RGB, and saves the final result as a PNG image.
-        """
+
         try:
-            # 1. Create the frame buffer (640x480)
+            # Crea il frame buffer vuoto (risoluzione predefinita 640x480)
             frame_buffer = self.blitter.create_frame_buffer()
 
-            # 2. Draw the background tile map first
+            # Disegna per prima la mappa dei tile di sfondo sul frame buffer
             self.blitter.draw_tile_map(
                 frame_buffer, 
                 scene_data["tile_map"], 
                 self.vram.tiles
             )
 
-            # 3. Draw the sprites in the order they appear in the JSON
+            # Disegna gli sprite nell'ordine in cui compaiono nel file JSON
             self.blitter.draw_sprites(
                 frame_buffer, 
                 scene_data["sprites"], 
@@ -37,25 +36,25 @@ class RenderingPipeline:
                 scene_data["transparent_index"]
             )
 
-            # 4. Convert the indexed frame buffer into an RGB image using the palette
+            # Converte il frame buffer indicizzato in un'immagine RGB usando la palette
             rgb_image_data = self.__convert_to_rgb(frame_buffer)
 
-            # 5. Save the final result as a PNG image using Pillow
-            image = Image.fromarray(rgb_image_data, mode="RGB")
-            image.save(output_path, format="PNG")
+            # Salva il risultato finale su file come immagine PNG tramite la libreria Pillow
+            image = Image.fromarray(rgb_image_data, mode = "RGB")
+            image.save(output_path, format = "PNG")
 
         except Exception as e:
             raise RenderingPipelineException(f"Failed to render scene: {e}")
 
+    # Mappa ogni indice di pixel nel frame buffer alla corrispondente tripla RGB.
     def __convert_to_rgb(self, frame_buffer):
-        """Maps each pixel index in the frame buffer to its corresponding RGB triplet."""
         height, width = frame_buffer.shape
-        rgb_image = np.zeros((height, width, 3), dtype=np.uint8)
+        rgb_image = np.zeros((height, width, 3), dtype = np.uint8)
 
-        # Map each palette index to its RGB color from the palette list
-        palette_array = np.array(self.palette.palette, dtype=np.uint8)
+        # Estrae l'array dei colori della palette e lo converte in array NumPy uint8
+        palette_array = np.array(self.palette.palette, dtype = np.uint8)
         
-        # Vectorized mapping using numpy advanced indexing
+        # Converte ogni numero del frame buffer nel colore RGB corrispondente usando la palette
         rgb_image = palette_array[frame_buffer]
 
         return rgb_image

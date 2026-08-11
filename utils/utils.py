@@ -2,15 +2,17 @@
 
 import argparse
 
+# Configura e richiede gli argomenti da riga di comando nell'ordine specificato.
 def get_argv():
 
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description = "Retro 2D Renderer Command Line Interface")
 
-    # Positional arguments (enforces strict order)
-    parser.add_argument("palette_json", help="Path to palette.json")
-    parser.add_argument("scene_json", help="Path to scene.json")
-    parser.add_argument("tiles_bin", help="Path to tiles.bin")
-    parser.add_argument("sprites_bin", help="Path to sprites.bin")
-    parser.add_argument("output_png", help="Path to output.png")
+    # Argomenti posizionali (forzano l'ordine richiesto)
+    parser.add_argument("palette_json", help = "Percorso del file JSON della palette")
+    parser.add_argument("scene_json", help = "Percorso del file JSON della scena")
+    parser.add_argument("tiles_bin", help = "Percorso del file binario del tile sheet")
+    parser.add_argument("sprites_bin", help = "Percorso del file binario dello sprite sheet")
+    parser.add_argument("output_png", help = "Percorso del file PNG di output")
     
+    # Restituisce l'oggetto Namespace contenente tutti i percorsi analizzati
     return parser.parse_args()

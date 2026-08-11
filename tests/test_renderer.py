@@ -355,7 +355,7 @@ def test_draw_sprites_missing_field_raises(tiles_bin_path, sprites_bin_path):
 
 def test_apply_transformations_flip_h():
     blitter = Blitter()
-    sprite = np.zeros((64, 64), dtype=np.uint8)
+    sprite = np.zeros((64, 64), dtype = np.uint8)
     sprite[:, 0] = 5  # marker column at the left edge
     flipped = blitter._Blitter__apply_transformations(sprite, flip_h=True, flip_v=False, rotation=0)
     assert np.all(flipped[:, 63] == 5) and np.all(flipped[:, 0] == 0)
@@ -363,7 +363,7 @@ def test_apply_transformations_flip_h():
 
 def test_apply_transformations_flip_h_and_v_combined():
     blitter = Blitter()
-    sprite = np.zeros((64, 64), dtype=np.uint8)
+    sprite = np.zeros((64, 64), dtype = np.uint8)
     sprite[0, 0] = 9  # single marker pixel at top-left corner
     flipped = blitter._Blitter__apply_transformations(sprite, flip_h=True, flip_v=True, rotation=0)
     assert flipped[63, 63] == 9
@@ -372,7 +372,7 @@ def test_apply_transformations_flip_h_and_v_combined():
 
 def test_apply_transformations_rotation_180():
     blitter = Blitter()
-    sprite = np.zeros((64, 64), dtype=np.uint8)
+    sprite = np.zeros((64, 64), dtype = np.uint8)
     sprite[0, 0] = 9
     rotated = blitter._Blitter__apply_transformations(sprite, flip_h=False, flip_v=False, rotation=180)
     assert rotated[63, 63] == 9
@@ -381,7 +381,7 @@ def test_apply_transformations_rotation_180():
 
 def test_apply_transformations_rotation_270():
     blitter = Blitter()
-    sprite = np.zeros((64, 64), dtype=np.uint8)
+    sprite = np.zeros((64, 64), dtype = np.uint8)
     sprite[0, :] = 5  # top row marker
     rotated = blitter._Blitter__apply_transformations(sprite, flip_h=False, flip_v=False, rotation=270)
     assert rotated.shape == (64, 64)
@@ -395,7 +395,7 @@ def test_apply_transformations_rotation_270():
 
 def test_apply_transformations_flip_plus_rotation_combo():
     blitter = Blitter()
-    sprite = np.zeros((64, 64), dtype=np.uint8)
+    sprite = np.zeros((64, 64), dtype = np.uint8)
     sprite[0, 0] = 7
     combo = blitter._Blitter__apply_transformations(sprite, flip_h=True, flip_v=False, rotation=180)
     # flip_h moves marker to (0,63); rotation 180 then moves it to (63,0)
@@ -572,7 +572,7 @@ def test_render_scene_no_sprites_background_only(palette_path, tiles_bin_path, s
     pipeline.render_scene(scene, str(out))
 
     rgb = np.array(Image.open(out))
-    assert np.all(rgb == np.array([255, 0, 0], dtype=np.uint8))
+    assert np.all(rgb == np.array([255, 0, 0], dtype = np.uint8))
 
 
 def test_render_scene_composition_order_tile_then_sprite(
@@ -629,7 +629,7 @@ def test_convert_to_rgb_matches_palette_for_all_indices(
     pipeline.render_scene(scene, str(out))
 
     rgb = np.array(Image.open(out))
-    expected = np.array(BASE_PALETTE[index], dtype=np.uint8)
+    expected = np.array(BASE_PALETTE[index], dtype = np.uint8)
     assert np.all(rgb == expected)
 
 
