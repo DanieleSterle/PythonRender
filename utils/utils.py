@@ -1,7 +1,5 @@
 # Daniele Sterle SM3201594
 
-# Se utils solo questo, spostare in main.py
-
 import argparse
 
 def get_argv():

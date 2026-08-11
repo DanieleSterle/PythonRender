@@ -1,17 +1,19 @@
 # Daniele Sterle SM3201594
 
 import sys
-import utils
-from palette import Palette, PaletteException
-from vram import VirtualVRAM, VirtualVRAMException
-from scene import SceneParser, SceneParserException
-from blitter import Blitter, BlitterException
-from pipeline import RenderingPipeline, RenderingPipelineException
+import utils.utils as utl
+from src.palette import Palette, PaletteException
+from src.vram import VirtualVRAM, VirtualVRAMException
+from src.scene import SceneParser, SceneParserException
+from src.blitter import Blitter, BlitterException
+from src.pipeline import RenderingPipeline, RenderingPipelineException
+
+# TODO: + test, cambiare struttura prog, refactor
 
 def main():
 
     try:
-        args = utils.get_argv()
+        args = utl.get_argv()
 
         # 1. Load and validate components
         palette = Palette(args.palette_json)

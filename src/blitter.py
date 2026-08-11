@@ -1,6 +1,5 @@
 # Daniele Sterle SM3201594
 
-import json
 import numpy as np
 
 class BlitterException(Exception):
@@ -40,7 +39,7 @@ class Blitter():
         """
         for sprite_data in sprites_list:
             # 1. Validate sprite properties
-            self._validate_sprite(sprite_data)
+            self.__validate_sprite(sprite_data)
             
             sprite_id = sprite_data["id"]
             x_pos = sprite_data["x"]
@@ -53,12 +52,12 @@ class Blitter():
             sprite_pixels = sprites_vram[sprite_id].copy()
             
             # 2. Apply transformations (flips and rotations)
-            transformed_sprite = self._apply_transformations(sprite_pixels, flip_h, flip_v, rotation)
+            transformed_sprite = self.__apply_transformations(sprite_pixels, flip_h, flip_v, rotation)
             
             # 3. Blit onto frame buffer with transparency and clipping
-            self._blit_sprite_to_buffer(frame_buffer, transformed_sprite, x_pos, y_pos, transparent_index)
+            self.__blit_sprite_to_buffer(frame_buffer, transformed_sprite, x_pos, y_pos, transparent_index)
 
-    def _validate_sprite(self, sprite):
+    def __validate_sprite(self, sprite):
         """Validates individual sprite attributes."""
         required_keys = {"id", "x", "y", "flip_h", "flip_v", "rotation"}
         if not all(k in sprite for k in required_keys):
@@ -67,19 +66,23 @@ class Blitter():
         if sprite["rotation"] not in {0, 90, 180, 270}:
             raise BlitterException(f"Invalid rotation value: {sprite['rotation']}. Must be 0, 90, 180, or 270.")
 
-    def _apply_transformations(self, sprite_img, flip_h, flip_v, rotation):
+    def __apply_transformations(self, sprite_img, flip_h, flip_v, rotation):
         """Applies horizontal/vertical flips and 90-degree increments of rotation."""
         # Horizontal flip
+        # np.fliplr flips the array horizontally (left to right) along axis 1
+        # Equivalent to mirroring a sprite across a vertical central line
         if flip_h:
             sprite_img = np.fliplr(sprite_img)
             
         # Vertical flip
+        # np.flipud flips the array vertically (top to bottom) along axis 0
+        # Equivalent to mirroring a sprite across a horizontal central line
         if flip_v:
             sprite_img = np.flipud(sprite_img)
             
         # Rotation (0, 90, 180, 270 degrees)
         if rotation == 90:
-            sprite_img = np.rot90(sprite_img, k=3)  # Counter-clockwise 90 is clockwise 270, or k=1 depending on convention
+            sprite_img = np.rot90(sprite_img, k=3)
         elif rotation == 180:
             sprite_img = np.rot90(sprite_img, k=2)
         elif rotation == 270:
@@ -87,7 +90,7 @@ class Blitter():
             
         return sprite_img
 
-    def _blit_sprite_to_buffer(self, frame_buffer, sprite_img, x, y, transparent_index):
+    def __blit_sprite_to_buffer(self, frame_buffer, sprite_img, x, y, transparent_index):
         """Copies sprite pixels to frame buffer handling transparency and out-of-bounds clipping."""
         fh, fw = frame_buffer.shape
         sh, sw = sprite_img.shape

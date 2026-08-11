@@ -8,16 +8,19 @@ class PaletteException(Exception):
 class Palette():
 
     def __init__(self, json_path):
-        self.palette = self._load_and_validate(json_path)
+        raw_data = self.__load(json_path)
+        self.palette = self.__validate(raw_data)
 
-    # separare funzioni?
-    def _load_and_validate(self, palette_json):
+    def __load(self, palette_json):
+        """Loads the raw JSON data from the palette file."""
         try:
-            with open(palette_json, "r", encoding = "utf-8") as file:
-                data = json.load(file)
+            with open(palette_json, "r", encoding="utf-8") as file:
+                return json.load(file)
         except Exception as e:
             raise PaletteException(f"Failed to read palette JSON file: {e}")
 
+    def __validate(self, data):
+        """Validates the palette data structure and its color constraints."""
         # The palette must be a list containing exactly 16 colors
         if not isinstance(data, list) or len(data) != 16:
             raise PaletteException("Palette must contain exactly 16 colors.")
@@ -35,9 +38,3 @@ class Palette():
             validated_palette.append(list(color))
 
         return validated_palette
-
-    def get_color(self, index):
-        """Resolves an index (0-15) into its corresponding RGB value."""
-        if not isinstance(index, int) or not (0 <= index < len(self.palette)):
-            raise PaletteException(f"Invalid palette index: {index}. Must be between 0 and 15.")
-        return self.palette[index]

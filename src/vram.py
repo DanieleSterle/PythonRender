@@ -7,12 +7,16 @@ class VirtualVRAMException(Exception):
 
 class VirtualVRAM():
     def __init__(self, tiles_path, sprites_path):
-        self.tiles = self._load_and_decode_sheet(tiles_path, 256, 32, 8, 8)
-        self.sprites = self._load_and_decode_sheet(sprites_path, 256, 64, 4, 4)
+        self.tiles = self.__load_and_decode_sheet(tiles_path, 256, 32, 8, 8)
+        self.sprites = self.__load_and_decode_sheet(sprites_path, 256, 64, 4, 4)
 
-    # separare funzioni?
-    def _load_and_decode_sheet(self, filepath, sheet_size, item_size, grid_rows, grid_cols):
-        
+    def __load_and_decode_sheet(self, filepath, sheet_size, item_size, grid_rows, grid_cols):
+        raw_data = self.__load(filepath, sheet_size)
+        sheet_2d = self.__decode(raw_data, sheet_size)
+        return self.__split_into_grid(sheet_2d, grid_rows, grid_cols, item_size)
+
+    def __load(self, filepath, sheet_size):
+        """Loads and validates the raw binary file data."""
         try:
             with open(filepath, "rb") as file:
                 raw_data = file.read()
@@ -24,8 +28,12 @@ class VirtualVRAM():
         if len(raw_data) != expected_bytes:
             raise VirtualVRAMException(f"Invalid file size for {filepath}. Expected {expected_bytes} bytes.")
 
+        return raw_data
+
+    def __decode(self, raw_data, sheet_size):
+        """Decodes packed 4-bit nibbles into a 2D sheet of palette indices."""
         # Convert raw bytes to a numpy array of uint8
-        byte_array = np.frombuffer(raw_data, dtype = np.uint8)
+        byte_array = np.frombuffer(raw_data, dtype=np.uint8)
 
         # Unpack nibbles: each byte contains 2 pixels (high nibble and low nibble)
         # Notation: 0000 actual_bit (eg. 0000 0100) 
@@ -41,16 +49,17 @@ class VirtualVRAM():
 
         # Interleave high and low nibbles to restore the full pixel array
         # idea: re-ordering array
-        pixels = np.empty(sheet_size * sheet_size, dtype = np.uint8)
+        pixels = np.empty(sheet_size * sheet_size, dtype=np.uint8)
         # start = 0, end = None (end of list), step = 2
         pixels[0::2] = high_nibble
         # start = 1, end = None (end of list), step = 2
         pixels[1::2] = low_nibble
 
         # Reshape into a 2D sheet (sheet_size x sheet_size)
-        sheet_2d = pixels.reshape((sheet_size, sheet_size))
+        return pixels.reshape((sheet_size, sheet_size))
 
-        # Split the sheet into individual items arranged in a grid
+    def __split_into_grid(self, sheet_2d, grid_rows, grid_cols, item_size):
+        """Splits the 2D sheet matrix into individual grid items (tiles or sprites)."""
         items = []
         for r in range(grid_rows):
             for c in range(grid_cols):
@@ -62,9 +71,9 @@ class VirtualVRAM():
                 x1 = c * item_size
                 x2 = x1 + item_size
 
-                # extract the item (tile / sheet)
+                # extract the item (tile / sprite)
                 item = sheet_2d[y1:y2, x1:x2]
                 items.append(item)
 
-        # return all item
-        return np.array(items, dtype = np.uint8)
+        # return all items
+        return np.array(items, dtype=np.uint8)
